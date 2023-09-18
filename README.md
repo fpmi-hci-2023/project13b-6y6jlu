@@ -17,6 +17,9 @@ To install the application, follow these steps:
 ## Usage
 After installing the application, you can use it as follows
 
+## Lab reports
+[Lab report №1](https://docs.google.com/document/d/1ALxdqEXlY4uSspoAyOJBUhMoOzBxHiOC/edit?usp=sharing&ouid=106195580385176481462&rtpof=true&sd=true)
+
 
 ## Contributing
 [Tatsiana Lazovskaya](https://github.com/tanyalzvsk) 
