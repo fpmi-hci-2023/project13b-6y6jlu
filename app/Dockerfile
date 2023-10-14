@@ -9,10 +9,10 @@ EXPOSE 8080
 
 WORKDIR /app
 
+COPY . /app
+
 # Install any needed packages specified in requirements.txt
-COPY requirements.txt /app
-RUN pip3 --no-cache-dir install -r requirements.txt
+RUN pip3 --no-cache-dir install -r app/requirements.txt
 
 # Run app.py when the container launches
-COPY app.py /app
 CMD ["python3", "app.py"]
