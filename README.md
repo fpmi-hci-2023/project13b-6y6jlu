@@ -22,7 +22,14 @@ After installing the application, you can use it as follows
 
 [Lab report №2](https://docs.google.com/document/d/15A_NINQVEf6_fwhz1EfftzEakHzGPSvlU-zRlgx5_Us/edit?usp=sharing)
 
+[Lab report №3](https://docs.google.com/document/d/1K_lcVpipbTlwFrvDq51MwdixZYLDBe8aslZusS8a-qo/edit)
+
+[Lab report №4](https://docs.google.com/document/d/1FfyYQut7dLLqEgk-6Iq5cldRtkA-RBz_NnJib7hr5mQ/edit)
+
+[Lab report №5](https://docs.google.com/document/d/1yOdonhqF04G0g5MUMHRWZc889ZDKO3oVO8pB35pozf0/edit)
+
 [Lab report №6](https://docs.google.com/document/d/1MtTv6xo5WcFdb3q8ic94AXVisH_GN5wuu13B3AOBzvE/edit?usp=sharing)
+
 
 
 ## Contributing
