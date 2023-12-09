@@ -4,7 +4,9 @@ from flask import request, jsonify
 from typing import List, Dict
 from flasgger import Swagger
 import json
+from DBHelper import *
 
+Session = sessionmaker(bind=engine)
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -213,4 +215,7 @@ def api_delete(id):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+  app.run(host="0.0.0.0", port=8080)
+  # with Session() as session:
+  #     result = session.query(Book).join(Author).all()
+  #     print(result[0].name)
