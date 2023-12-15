@@ -214,6 +214,15 @@ def api_delete(id):
     return "Success: Book information has been deleted."
 
 
+@app.route("/api/v1/books/search/<title>", methods=["GET"])
+def api_search_by_name(title):
+    with Session() as session:
+        query = session.query(Book.id).filter(Book.name.like('%title%'))
+        result = query.all()
+        for row in result:
+            print(row.id)
+
+
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=8080)
   # with Session() as session:
