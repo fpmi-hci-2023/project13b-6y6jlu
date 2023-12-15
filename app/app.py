@@ -384,7 +384,7 @@ def update_books_to_read():
 
 
 @app.route("/api/v1/books/book_challenge_want", methods=["POST"])
-def update_books_to_read():
+def update_books_want():
     data = request.json
     book_want = data["book_want"]
     with Session() as session:
@@ -392,6 +392,8 @@ def update_books_to_read():
         if existing_status:
             existing_status.book_want = book_want
         session.commit()    
+
+
 
 
 if __name__ == "__main__":
