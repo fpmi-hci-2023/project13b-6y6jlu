@@ -214,13 +214,25 @@ def api_delete(id):
     return "Success: Book information has been deleted."
 
 
-@app.route("/api/v1/books/search/<title>", methods=["GET"])
-def api_search_by_name(title):
+@app.route("/api/v1/books/search/title", methods=["POST"])
+def api_search_by_name():
+    title = request.json
     with Session() as session:
         query = session.query(Book.id).filter(Book.name.like('%title%'))
         result = query.all()
         for row in result:
             print(row.id)
+            
+        
+@app.route("/api/v1/books/search/id", methods=["POST"])
+def api_search_by_id():
+    book_id = request.json
+    with Session() as session:
+        book = session.query(Book).get(book_id)
+        if book is not None:
+            print(f"ID: {book.id}, Title: {book.title}, Author: {book.author}")
+        else:
+            print("Книга не найдена.")
 
 
 if __name__ == "__main__":
