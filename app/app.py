@@ -214,6 +214,9 @@ def api_delete(id):
     return "Success: Book information has been deleted."
 
 
+#book
+
+#search book by name   
 @app.route("/api/v1/books/search/title", methods=["POST"])
 def api_search_by_name():
     data = request.json
@@ -224,8 +227,10 @@ def api_search_by_name():
         for row in result:
             print(row.id)
         session.commit()
+
+
             
-        
+#search book by id   
 @app.route("/api/v1/books/search/id", methods=["POST"])
 def api_search_by_id():
     data = request.json
@@ -239,6 +244,7 @@ def api_search_by_id():
         session.commit()
 
 
+
 #add book into collection
 @app.route("/api/v1/books/collection", methods=["POST"])
 def api_add_into_collection():
@@ -250,6 +256,30 @@ def api_add_into_collection():
         session.add(book_collection)
         session.commit()
 
+
+#change book status
+# NOT SURE
+
+@app.route("/api/v1/books/book_status", methods=["POST"])
+def api_add_into_collection():
+    data = request.json
+    book_id = data["book_id"]
+    user_id = data["user_id"]
+    status = data["status"]
+    
+    with Session() as session:
+        existing_status = session.query(BookStatus).filter_by(user_id=user_id, book_id=book_id).first()
+        if existing_status:
+            existing_status.status = status
+        else:
+            new_status = BookStatus(user_id=user_id, book_id=book_id, status=status)
+            session.add(new_status)
+
+        session.commit()
+
+
+
+#collections
 
 #create new collection
 @app.route("/api/v1/books/new_collection", methods=["POST"])
@@ -299,6 +329,69 @@ def get_all_books_collection():
         for row in result:
             print(row.collection_id)
         session.commit()
+
+
+# add new friend
+@app.route("/api/v1/books/friend_list", methods=["POST"])
+def add_new_friend():
+    data = request.json
+    user_id = data["user_id"]
+    friend_id = data["friend_id"]
+    with Session() as session:
+        z1 = FriendList(user_id=user_id, friend_id=friend_id)
+        z2 = FriendList(user_id=friend_id, friend_id=user_id)
+        session.add(z1)
+        session.add(z2)
+        session.commit()
+        
+# register
+@app.route("/api/v1/books/registration", methods=["POST"])
+def new_register():
+    data = request.json
+    login = data["login"]
+    user_id = data["user_id"]
+    password = data["password"]
+    email = data["email"]
+    with Session() as session:
+        log = LoginData(login=login, user_id=user_id, password=password, email=email)
+        session.add(log)
+        session.commit()
+        
+# user
+@app.route("/api/v1/books/new_user", methods=["POST"])
+def new_user():
+    data = request.json
+    name = data["name"]
+    user_id = data["user_id"]
+    info = info["info"]
+    with Session() as session:
+        us = User(name=name, user_id=user_id, info=info, book_challenge_id=user_id)
+        bc = BookChallenge(challenge_id=user_id, book_read=0, book_want=0)
+        session.add(bc)
+        session.add(us)
+        session.commit()
+        
+# book challenge
+@app.route("/api/v1/books/book_challenge_read", methods=["POST"])
+def update_books_to_read():
+    data = request.json
+    book_read = data["book_read"]
+    with Session() as session:
+        existing_status = session.query(BookChallenge).filter_by(challenge_id=challenge_id).first()
+        if existing_status:
+            existing_status.book_read = book_read
+        session.commit()
+
+
+@app.route("/api/v1/books/book_challenge_want", methods=["POST"])
+def update_books_to_read():
+    data = request.json
+    book_want = data["book_want"]
+    with Session() as session:
+        existing_status = session.query(BookChallenge).filter_by(challenge_id=challenge_id).first()
+        if existing_status:
+            existing_status.book_want = book_want
+        session.commit()    
 
 
 if __name__ == "__main__":
