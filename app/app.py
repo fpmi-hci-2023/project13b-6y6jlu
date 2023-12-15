@@ -248,9 +248,57 @@ def api_add_into_collection():
     with Session() as session:
         book_collection = BookCollection(book_id=book_id, collection_id=collection_id)
         session.add(book_collection)
-
         session.commit()
 
+
+#create new collection
+@app.route("/api/v1/books/new_collection", methods=["POST"])
+def api_create_new_collection():
+    data = request.json
+    collection_id = data["collection_id"]
+    collection_name = data["collection_name"]
+    owner_id = data["owner_id"]
+    with Session() as session:
+        new_collection = Collection(collection_name=collection_name, collection_id=collection_id, owner_id=owner_id)
+        session.add(new_collection)
+        session.commit()
+    
+    
+#create new user collection
+@app.route("/api/v1/books/new_collection", methods=["POST"])
+def api_create_new_collection():  
+    data = request.json
+    user_id = data["user_id"]
+    collection_id = data["collection_id"]
+    with Session() as session:
+        new_collection = UserCollections(collection_id=collection_id, user_id=user_id)
+        session.add(new_collection)
+        session.commit()
+    
+#get all user collections
+@app.route("/api/v1/books/all_user_collections", methods=["POST"])
+def api_get_all_user_collections():
+    data = request.json
+    user_id = data["user_id"]
+    with Session() as session:
+        query = session.query(UserCollections.collection_id).get(UserCollections.user_id)
+        result = query.all()
+        for row in result:
+            print(row.collection_id)
+        session.commit()
+    
+
+#get all book from collection
+@app.route("/api/v1/books/all_collection_books", methods=["POST"])
+def get_all_books_collection():
+    data = request.json
+    collection_id = data["collection_id"]
+    with Session() as session:
+        query = session.query(BookCollection.collection_id).get(BookCollection.book_id)
+        result = query.all()
+        for row in result:
+            print(row.collection_id)
+        session.commit()
 
 
 if __name__ == "__main__":
