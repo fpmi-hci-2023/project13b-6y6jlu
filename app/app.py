@@ -216,23 +216,41 @@ def api_delete(id):
 
 @app.route("/api/v1/books/search/title", methods=["POST"])
 def api_search_by_name():
-    title = request.json
+    data = request.json
+    book = data["name"]
     with Session() as session:
         query = session.query(Book.id).filter(Book.name.like('%title%'))
         result = query.all()
         for row in result:
             print(row.id)
+        session.commit()
             
         
 @app.route("/api/v1/books/search/id", methods=["POST"])
 def api_search_by_id():
-    book_id = request.json
+    data = request.json
+    book_id = data["book_id"]
     with Session() as session:
         book = session.query(Book).get(book_id)
         if book is not None:
             print(f"ID: {book.id}, Title: {book.title}, Author: {book.author}")
         else:
             print("Книга не найдена.")
+        session.commit()
+
+
+#add book into collection
+@app.route("/api/v1/books/collection", methods=["POST"])
+def api_add_into_collection():
+    data = request.json
+    book_id = data["book_id"]
+    collection_id = data["collection_id"]
+    with Session() as session:
+        book_collection = BookCollection(book_id=book_id, collection_id=collection_id)
+        session.add(book_collection)
+
+        session.commit()
+
 
 
 if __name__ == "__main__":
