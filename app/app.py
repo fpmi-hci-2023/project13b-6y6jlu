@@ -169,33 +169,51 @@ def add_new_friend():
         session.add(z1)
         session.add(z2)
         session.commit()
-        
+ 
+def checkCredentials(username, password=None):
+    if password is None:
+        with Session() as session:
+            results = session.query(LoginData).filter(LoginData.login == username).all()
+        if len(results) > 0:
+            return -1
+        else:
+            return 0
+    else:
+        with Session() as session:
+            results = session.query(LoginData).filter(and_(LoginData.login == username, LoginData.password == password)).all()
+        if len(results) != 1:
+            return -1
+        else:
+            return results[0].id
+
+
+ 
 # register
 @app.route("/api/v1/books/registration", methods=["POST"])
 def new_register():
     data = request.json
     login = data["login"]
-    user_id = data["user_id"]
+    user_id = session.query(func.max(LoginData.user_id)).first()[0]+1
     password = data["password"]
     email = data["email"]
-    with Session() as session:
-        log = LoginData(login=login, user_id=user_id, password=password, email=email)
-        session.add(log)
-        session.commit()
-        
-# user
-@app.route("/api/v1/books/new_user", methods=["POST"])
-def new_user():
-    data = request.json
     name = data["name"]
-    user_id = data["user_id"]
     info = info["info"]
+    response = {}
     with Session() as session:
+        if checkCredentials(username=username) == -1:
+            response = {'success': False, 'message': 'User with same name already exists.', user_id: None}
+            return jsonify(response)
+        log = LoginData(login=login, user_id=user_id, password=password, email=email)
         us = User(name=name, user_id=user_id, info=info, book_challenge_id=user_id)
         bc = BookChallenge(challenge_id=user_id, book_read=0, book_want=0)
-        session.add(bc)
+        session.add(log)
         session.add(us)
+        session.add(bc)
         session.commit()
+        response = {'success': True, 'message': 'Register and login successful!', 'userId': user_id}
+        return jsonify(response)
+        
+        
         
 # book challenge
 @app.route("/api/v1/books/book_challenge_read", methods=["POST"])
