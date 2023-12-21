@@ -201,7 +201,7 @@ def new_register():
     response = {}
     with Session() as session:
         if checkCredentials(username=username) == -1:
-            response = {'success': False, 'message': 'User with same name already exists.', user_id: None}
+            response = {'success': False, 'message': 'User with same name already exists.', 'userId': None}
             return jsonify(response)
         log = LoginData(login=login, user_id=user_id, password=password, email=email)
         us = User(name=name, user_id=user_id, info=info, book_challenge_id=user_id)
@@ -213,7 +213,21 @@ def new_register():
         response = {'success': True, 'message': 'Register and login successful!', 'userId': user_id}
         return jsonify(response)
         
-        
+   
+
+@app.route("/api/v1/books/signIn", methods=["POST"])
+def signIn():
+    username = request.json.get('login')
+    password = request.json.get('password')
+    current_user_id = checkCredentials(username=username, password=password)
+
+    if current_user_id != -1:
+        response = {'success': True, 'message': 'Login successful!', 'userId': current_user_id}
+    else:
+        response = {'success': False, 'message': 'Invalid username or password.', 'userId': None}
+    return jsonify(response)
+
+   
         
 # book challenge
 @app.route("/api/v1/books/book_challenge_read", methods=["POST"])
