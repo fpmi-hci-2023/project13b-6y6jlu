@@ -205,17 +205,16 @@ def checkCredentials(username, password=None):
 
  
 # register
-#@app.route("/api/v1/books/registration", methods=["POST"])
+@app.route("/api/v1/books/registration", methods=["POST"])
 def new_register():
-    #data = request.json
-    
+    data = request.json
     with Session() as session:
-        login = "valery28" #data["login"]
+        login = data["login"]
         user_id = session.query(func.max(LoginData.user_id)).first()[0]+1
-        password = "1234"#data["password"]
-        email = "" #data["email"]
-        name = "valery" #data["name"]
-        info = "Like clever woman in books!" #info["info"]
+        password = data["password"]
+        email = data["email"]
+        name = data["name"]
+        info = info["info"]
         response = {}
         if checkCredentials(username=login) == -1:
             response = {'success': False, 'message': 'User with same name already exists.', 'userId': None}
