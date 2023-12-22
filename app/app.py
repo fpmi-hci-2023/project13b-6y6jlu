@@ -268,10 +268,33 @@ def update_books_want():
         session.commit()    
 
 
+# get all user books
+@app.route("/api/v1/books/get_user_books", methods=["POST"])
+def api_search_by_id():
+    data = request.json
+    user_id = data["user_id"]
+    book_list = []
+    with Session() as session:
+        query = session.query(BookStatus).filter(BookStatus.user_id == user_id).all()
+        for q in query:
+            book_id = q.book_id
+            book = session.query(Book).get(book_id)
+            author = session.query(Author).get(book.author_id)
+            auth_name = ''
+            if author is not None:
+                auth_name = author.name
+            book_dict = {
+            'book_id': book.book_id,
+            'author' : auth_name,
+            'name' : book.name,
+            'status' : q.status}
+            book_list.append(book_dict)
+    return json.dumps(book_list, ensure_ascii=False) 
+
 
 
 if __name__ == "__main__":
-    print(signIn())
+    print(api_search_by_id())
   #app.run(host="0.0.0.0", port=8080)
   # with Session() as session:
   #     result = session.query(Book).join(Author).all()
