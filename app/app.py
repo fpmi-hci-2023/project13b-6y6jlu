@@ -78,13 +78,13 @@ def api_search_by_id():
             'name' : book.name,
             'annotation' : book.annotation,
             'rate': book.rate}
-            print(f"ID: {book.book_id}, Title: {book.name}, Author: {book.author_id}")
-            return jsonify(response)
+            #print(f"ID: {book.book_id}, Title: {book.name}, Author: {book.author_id}")
+            return json.dumps(response, ensure_ascii=False) 
         else:
             print("Книга не найдена.")
         session.commit()
     response = {}
-    return jsonify(response)
+    return json.dumps(response, ensure_ascii=False) 
 
 
 
@@ -272,7 +272,7 @@ def update_books_want():
 
 
 if __name__ == "__main__":
-    print(api_search_by_name())
+    print(api_search_by_id())
   #app.run(host="0.0.0.0", port=8080)
   # with Session() as session:
   #     result = session.query(Book).join(Author).all()
