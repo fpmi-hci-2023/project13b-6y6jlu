@@ -9,9 +9,9 @@ To install the application, follow these steps:
 
 
 ## Sub modules
-[forWORDS Web]() - a web interface for managing books and tracking reading progress.
+[forWORDS Web](https://github.com/fpmi-hci-2023/project13b-web-6y6jlu) - a web interface for managing books and tracking reading progress.
 
-[forWORDS Mobile]() - a mobile application for tracking books and reading reviews.
+[forWORDS Mobile](https://github.com/fpmi-hci-2023/project13b-mobile-6y6jlu) - a mobile application for tracking books and reading reviews.
 
 
 ## Usage
