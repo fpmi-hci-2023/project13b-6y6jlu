@@ -19,16 +19,14 @@ swagger = Swagger(app)
 
 #book
 
-#search book by name   
-@app.route("/api/v1/books/search/title", methods=["POST"])
-def api_search_by_name():
-    data = request.json
-    title = data["name"]
+#get all books
+@app.route("/api/v1/books/all", methods=["POST"])
+def api_get_all_books():
     book_list = []
     with Session() as session:
-        books = session.query(Book).filter(Book.name.like('%title%'))
+        books = session.query(Book).all()
         for book in books:
-            author = session.query(Author).get(auth_id)
+            author = session.query(Author).get(book.author_id)
             auth_name = ''
             if author is not None:
                 auth_name = author.name
@@ -37,7 +35,28 @@ def api_search_by_name():
             'author' : auth_name,
             'name' : book.name}
             book_list.append(book_dict)
-            print(row.id)
+        return json.dumps(book_list)
+
+#search book by name   
+#@app.route("/api/v1/books/search/title", methods=["POST"])
+def api_search_by_name():
+    #data = request.json
+    #title = data["name"]
+    title = 'Гарри'
+    book_list = []
+    with Session() as session:
+        books = session.query(Book).all()
+        #books = session.query(Book).filter(Book.name.like('%title%'))
+        for book in books:
+            author = session.query(Author).get(book.author_id)
+            auth_name = ''
+            if author is not None:
+                auth_name = author.name
+            book_dict = {
+            'book_id': book.book_id,
+            'author' : auth_name,
+            'name' : book.name}
+            book_list.append(book_dict)
         return json.dumps(book_list)
 
 
@@ -87,7 +106,7 @@ def api_add_into_collection():
 # NOT SURE
 
 @app.route("/api/v1/books/book_status", methods=["POST"])
-def api_add_into_collection():
+def api_add_into_collection2():
     data = request.json
     book_id = data["book_id"]
     user_id = data["user_id"]
@@ -122,7 +141,7 @@ def api_create_new_collection():
     
 #create new user collection
 @app.route("/api/v1/books/new_collection", methods=["POST"])
-def api_create_new_collection():  
+def api_create_new_user_collection():  
     data = request.json
     user_id = data["user_id"]
     collection_id = data["collection_id"]
@@ -255,7 +274,8 @@ def update_books_want():
 
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", port=8080)
+    print(api_search_by_name())
+  #app.run(host="0.0.0.0", port=8080)
   # with Session() as session:
   #     result = session.query(Book).join(Author).all()
   #     print(result[0].name)
