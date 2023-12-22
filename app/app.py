@@ -27,13 +27,15 @@ def api_get_all_books():
         books = session.query(Book).all()
         for book in books:
             author = session.query(Author).get(book.author_id)
+            img = session.query(img_path).get(book.book_id)
             auth_name = ''
             if author is not None:
                 auth_name = author.name
             book_dict = {
             'book_id': book.book_id,
             'author' : auth_name,
-            'name' : book.name}
+            'name' : book.name,
+            'path' : img.path}
             book_list.append(book_dict)
         return  json.dumps(book_list, ensure_ascii=False) 
 
@@ -41,19 +43,21 @@ def api_get_all_books():
 @app.route("/api/v1/books/search/title", methods=["POST"])
 def api_search_by_name():
     data = request.json
-    title = data["name"]
+    title = data
     book_list = []
     with Session() as session:
         books = session.query(Book).filter(Book.name.like(f'%{title}%')).all()
         for book in books:
             author = session.query(Author).get(book.author_id)
+            img = session.query(img_path).get(book.book_id)
             auth_name = ''
             if author is not None:
                 auth_name = author.name
             book_dict = {
             'book_id': book.book_id,
             'author' : auth_name,
-            'name' : book.name}
+            'name' : book.name,
+            'path' : img.path}
             book_list.append(book_dict)
         return json.dumps(book_list, ensure_ascii=False) 
 
@@ -69,6 +73,7 @@ def api_search_by_id():
         if book is not None:
             auth_id = book.author_id
             author = session.query(Author).get(auth_id)
+            img = session.query(img_path).get(book.book_id)
             auth_name = ''
             if author is not None:
                 auth_name = author.name
@@ -77,7 +82,8 @@ def api_search_by_id():
             'author' : auth_name,
             'name' : book.name,
             'annotation' : book.annotation,
-            'rate': book.rate}
+            'rate': book.rate,
+            'path' : img.path}
             return json.dumps(response, ensure_ascii=False) 
         else:
             print("Книга не найдена.")
@@ -270,7 +276,7 @@ def update_books_want():
 
 # get all user books
 @app.route("/api/v1/books/get_user_books", methods=["POST"])
-def api_search_by_id():
+def get_all_user_books():
     data = request.json
     user_id = data["user_id"]
     book_list = []
