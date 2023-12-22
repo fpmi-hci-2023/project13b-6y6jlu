@@ -280,6 +280,7 @@ def api_search_by_id():
             book_id = q.book_id
             book = session.query(Book).get(book_id)
             author = session.query(Author).get(book.author_id)
+            img = session.query(img_path).get(book.book_id)
             auth_name = ''
             if author is not None:
                 auth_name = author.name
@@ -287,7 +288,8 @@ def api_search_by_id():
             'book_id': book.book_id,
             'author' : auth_name,
             'name' : book.name,
-            'status' : q.status}
+            'status' : q.status,
+            'path' : img.path}
             book_list.append(book_dict)
     return json.dumps(book_list, ensure_ascii=False) 
 

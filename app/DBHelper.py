@@ -104,3 +104,8 @@ class BookCollection(Base):
     book_id = Column(Integer, ForeignKey("Book.book_id"), primary_key=True)
     collection_id = Column(String, ForeignKey("Collection.collection_id"), primary_key=True)
 
+class img_path(Base):
+    __tablename__ = "img_path"
+    book_id = Column(Integer, primary_key=True)
+    path = Column(String)
+   
