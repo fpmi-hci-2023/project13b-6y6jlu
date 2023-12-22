@@ -200,7 +200,7 @@ def checkCredentials(username, password=None):
         if len(results) != 1:
             return -1
         else:
-            return results[0].id
+            return results[0].user_id
 
 
  
@@ -241,7 +241,7 @@ def signIn():
         response = {'success': True, 'message': 'Login successful!', 'userId': current_user_id}
     else:
         response = {'success': False, 'message': 'Invalid username or password.', 'userId': None}
-    return jsonify(response)
+    return json.dumps(response, ensure_ascii=False) 
 
    
         
@@ -271,7 +271,7 @@ def update_books_want():
 
 
 if __name__ == "__main__":
-    print(new_register())
+    print(signIn())
   #app.run(host="0.0.0.0", port=8080)
   # with Session() as session:
   #     result = session.query(Book).join(Author).all()
