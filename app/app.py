@@ -35,18 +35,16 @@ def api_get_all_books():
             'author' : auth_name,
             'name' : book.name}
             book_list.append(book_dict)
-        return json.dumps(book_list)
+        return  json.dumps(book_list, ensure_ascii=False) 
 
 #search book by name   
-#@app.route("/api/v1/books/search/title", methods=["POST"])
+@app.route("/api/v1/books/search/title", methods=["POST"])
 def api_search_by_name():
-    #data = request.json
-    #title = data["name"]
-    title = 'Гарри'
+    data = request.json
+    title = data["name"]
     book_list = []
     with Session() as session:
-        books = session.query(Book).all()
-        #books = session.query(Book).filter(Book.name.like('%title%'))
+        books = session.query(Book).filter(Book.name.like(f'%{title}%')).all()
         for book in books:
             author = session.query(Author).get(book.author_id)
             auth_name = ''
@@ -57,7 +55,7 @@ def api_search_by_name():
             'author' : auth_name,
             'name' : book.name}
             book_list.append(book_dict)
-        return json.dumps(book_list)
+        return json.dumps(book_list, ensure_ascii=False) 
 
 
             
