@@ -1,6 +1,6 @@
 import flask
 import mysql.connector
-from flask import request, jsonify
+from flask import request, jsonify, send_from_directory
 from typing import List, Dict
 from flasgger import Swagger
 import json
@@ -299,11 +299,38 @@ def get_all_user_books():
             book_list.append(book_dict)
     return json.dumps(book_list, ensure_ascii=False) 
 
+@app.route("/images")
+def showImg():
+     with Session() as session:
+        book = session.query(Book).get(1)
+        if book is not None:
+            auth_id = book.author_id
+            author = session.query(Author).get(auth_id)
+            img = session.query(img_path).get(book.book_id)
+            auth_name = ''
+            if author is not None:
+                auth_name = author.name
+            response = { 
+            'book_id': book.book_id,
+            'author' : auth_name,
+            'name' : book.name,
+            'annotation' : book.annotation,
+            'rate': book.rate,
+            'path' : img.path}
+            return json.dumps(response, ensure_ascii=False) 
 
+
+@app.route('/images/<filename>')
+def get_image(filename):
+    return send_from_directory('images', filename)
+
+
+@app.route("/")
+def showHomePage():
+    return "This is home page"
 
 if __name__ == "__main__":
-    print(api_search_by_id())
-  #app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080)
   # with Session() as session:
   #     result = session.query(Book).join(Author).all()
   #     print(result[0].name)
