@@ -78,7 +78,6 @@ def api_search_by_id():
             'name' : book.name,
             'annotation' : book.annotation,
             'rate': book.rate}
-            #print(f"ID: {book.book_id}, Title: {book.name}, Author: {book.author_id}")
             return json.dumps(response, ensure_ascii=False) 
         else:
             print("Книга не найдена.")
@@ -87,7 +86,7 @@ def api_search_by_id():
     return json.dumps(response, ensure_ascii=False) 
 
 
-
+# NEED CHECK
 #add book into collection
 @app.route("/api/v1/books/collection", methods=["POST"])
 def api_add_into_collection():
@@ -206,20 +205,21 @@ def checkCredentials(username, password=None):
 
  
 # register
-@app.route("/api/v1/books/registration", methods=["POST"])
+#@app.route("/api/v1/books/registration", methods=["POST"])
 def new_register():
-    data = request.json
-    login = data["login"]
-    user_id = session.query(func.max(LoginData.user_id)).first()[0]+1
-    password = data["password"]
-    email = data["email"]
-    name = data["name"]
-    info = info["info"]
-    response = {}
+    #data = request.json
+    
     with Session() as session:
-        if checkCredentials(username=username) == -1:
+        login = "valery28" #data["login"]
+        user_id = session.query(func.max(LoginData.user_id)).first()[0]+1
+        password = "1234"#data["password"]
+        email = "" #data["email"]
+        name = "valery" #data["name"]
+        info = "Like clever woman in books!" #info["info"]
+        response = {}
+        if checkCredentials(username=login) == -1:
             response = {'success': False, 'message': 'User with same name already exists.', 'userId': None}
-            return jsonify(response)
+            return json.dumps(response, ensure_ascii=False) 
         log = LoginData(login=login, user_id=user_id, password=password, email=email)
         us = User(name=name, user_id=user_id, info=info, book_challenge_id=user_id)
         bc = BookChallenge(challenge_id=user_id, book_read=0, book_want=0)
@@ -228,7 +228,7 @@ def new_register():
         session.add(bc)
         session.commit()
         response = {'success': True, 'message': 'Register and login successful!', 'userId': user_id}
-        return jsonify(response)
+        return json.dumps(response, ensure_ascii=False) 
         
    
 
@@ -272,7 +272,7 @@ def update_books_want():
 
 
 if __name__ == "__main__":
-    print(api_search_by_id())
+    print(new_register())
   #app.run(host="0.0.0.0", port=8080)
   # with Session() as session:
   #     result = session.query(Book).join(Author).all()
