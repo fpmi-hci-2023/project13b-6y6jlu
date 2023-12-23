@@ -278,7 +278,7 @@ def update_books_want():
 @app.route("/api/v1/books/get_user_books", methods=["POST"])
 def get_all_user_books():
     data = request.json
-    user_id = data["user_id"]
+    user_id = data
     book_list = []
     with Session() as session:
         query = session.query(BookStatus).filter(BookStatus.user_id == user_id).all()
@@ -298,6 +298,18 @@ def get_all_user_books():
             'path' : img.path}
             book_list.append(book_dict)
     return json.dumps(book_list, ensure_ascii=False)
+
+@app.route("/api/v1/books/user", methods=["POST"])
+def get_user_info():
+    data = request.json
+    user_id = data
+    with Session() as session:
+        query = session.query(User).filter(User.user_id == user_id).first()
+        user_dict = {
+            'name' : query.name,
+            'info': query.info
+            }
+    return json.dumps(user_dict, ensure_ascii=False) 
 
 @app.route("/images")
 def showImg():
@@ -331,6 +343,3 @@ def get_image(filename):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
-  # with Session() as session:
-  #     result = session.query(Book).join(Author).all()
-  #     print(result[0].name)
