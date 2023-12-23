@@ -30,6 +30,8 @@ After installing the application, you can use it as follows
 
 [Lab report №6](https://docs.google.com/document/d/1MtTv6xo5WcFdb3q8ic94AXVisH_GN5wuu13B3AOBzvE/edit?usp=sharing)
 
+[Lab report №7](https://docs.google.com/document/d/1yt4s8MLxUxnOxK-_PYhQTTo1g8l29MgKaHuFOaJ4Mlw/edit)
+
 
 
 ## Contributing
