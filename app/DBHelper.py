@@ -13,7 +13,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 
-engine = create_engine("sqlite:///app_data.db", echo=True)
+
+connection_string = "mysql+mysqlconnector://depravo:22110.10@depravo.mysql.pythonanywhere-services.com/depravo$app_data"
+engine = create_engine(connection_string, echo=True)
+#engine = create_engine("sqlite:///app_data.db", echo=True)
 
 class Base(DeclarativeBase):
     pass
@@ -81,7 +84,7 @@ class Review(Base):
     txt = Column(String)
     date = Column(String)
 
-    
+
 class FriendList(Base):
     __tablename__ = "FriendList"
     user_id = Column(Integer, ForeignKey("User.user_id"), primary_key=True)
@@ -104,3 +107,7 @@ class BookCollection(Base):
     book_id = Column(Integer, ForeignKey("Book.book_id"), primary_key=True)
     collection_id = Column(String, ForeignKey("Collection.collection_id"), primary_key=True)
 
+class img_path(Base):
+    __tablename__ = "img_path"
+    book_id = Column(Integer, primary_key=True)
+    path = Column(String)

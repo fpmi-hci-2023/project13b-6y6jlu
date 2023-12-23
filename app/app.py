@@ -1,6 +1,6 @@
 import flask
 import mysql.connector
-from flask import request, jsonify
+from flask import request, jsonify, send_from_directory
 from typing import List, Dict
 from flasgger import Swagger
 import json
@@ -10,9 +10,9 @@ Session = sessionmaker(bind=engine)
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-app.config["SWAGGER"] = {"title": "API Documentation", 
-                         "description": "API for forWords app", 
-                         "version": "0.0.1", 
+app.config["SWAGGER"] = {"title": "API Documentation",
+                         "description": "API for forWords app",
+                         "version": "0.0.1",
                          "termsOfService" : ''}
 swagger = Swagger(app)
 
@@ -27,63 +27,69 @@ def api_get_all_books():
         books = session.query(Book).all()
         for book in books:
             author = session.query(Author).get(book.author_id)
+            img = session.query(img_path).get(book.book_id)
             auth_name = ''
             if author is not None:
                 auth_name = author.name
             book_dict = {
             'book_id': book.book_id,
             'author' : auth_name,
-            'name' : book.name}
+            'name' : book.name,
+            'path' : img.path}
             book_list.append(book_dict)
-        return  json.dumps(book_list, ensure_ascii=False) 
+        return  json.dumps(book_list, ensure_ascii=False)
 
-#search book by name   
+#search book by name
 @app.route("/api/v1/books/search/title", methods=["POST"])
 def api_search_by_name():
     data = request.json
-    title = data["name"]
+    title = data
     book_list = []
     with Session() as session:
         books = session.query(Book).filter(Book.name.like(f'%{title}%')).all()
         for book in books:
             author = session.query(Author).get(book.author_id)
+            img = session.query(img_path).get(book.book_id)
             auth_name = ''
             if author is not None:
                 auth_name = author.name
             book_dict = {
             'book_id': book.book_id,
             'author' : auth_name,
-            'name' : book.name}
+            'name' : book.name,
+            'path' : img.path}
             book_list.append(book_dict)
-        return json.dumps(book_list, ensure_ascii=False) 
+        return json.dumps(book_list, ensure_ascii=False)
 
 
-            
-#search book by id   
+
+#search book by id
 @app.route("/api/v1/books/search/id", methods=["POST"])
 def api_search_by_id():
     data = request.json
-    book_id = data["book_id"]
+    book_id = data
     with Session() as session:
         book = session.query(Book).get(book_id)
         if book is not None:
             auth_id = book.author_id
             author = session.query(Author).get(auth_id)
+            img = session.query(img_path).get(book.book_id)
             auth_name = ''
             if author is not None:
                 auth_name = author.name
-            response = { 
+            response = {
             'book_id': book.book_id,
             'author' : auth_name,
             'name' : book.name,
             'annotation' : book.annotation,
-            'rate': book.rate}
-            return json.dumps(response, ensure_ascii=False) 
+            'rate': book.rate,
+            'path' : img.path}
+            return json.dumps(response, ensure_ascii=False)
         else:
             print("Книга не найдена.")
         session.commit()
     response = {}
-    return json.dumps(response, ensure_ascii=False) 
+    return json.dumps(response, ensure_ascii=False)
 
 
 # NEED CHECK
@@ -108,7 +114,7 @@ def api_add_into_collection2():
     book_id = data["book_id"]
     user_id = data["user_id"]
     status = data["status"]
-    
+
     with Session() as session:
         existing_status = session.query(BookStatus).filter_by(user_id=user_id, book_id=book_id).first()
         if existing_status:
@@ -134,11 +140,11 @@ def api_create_new_collection():
         new_collection = Collection(collection_name=collection_name, collection_id=collection_id, owner_id=owner_id)
         session.add(new_collection)
         session.commit()
-    
-    
+
+
 #create new user collection
 @app.route("/api/v1/books/new_collection", methods=["POST"])
-def api_create_new_user_collection():  
+def api_create_new_user_collection():
     data = request.json
     user_id = data["user_id"]
     collection_id = data["collection_id"]
@@ -146,7 +152,7 @@ def api_create_new_user_collection():
         new_collection = UserCollections(collection_id=collection_id, user_id=user_id)
         session.add(new_collection)
         session.commit()
-    
+
 #get all user collections
 @app.route("/api/v1/books/all_user_collections", methods=["POST"])
 def api_get_all_user_collections():
@@ -158,7 +164,7 @@ def api_get_all_user_collections():
         for row in result:
             print(row.collection_id)
         session.commit()
-    
+
 
 #get all book from collection
 @app.route("/api/v1/books/all_collection_books", methods=["POST"])
@@ -185,7 +191,7 @@ def add_new_friend():
         session.add(z1)
         session.add(z2)
         session.commit()
- 
+
 def checkCredentials(username, password=None):
     if password is None:
         with Session() as session:
@@ -203,7 +209,7 @@ def checkCredentials(username, password=None):
             return results[0].user_id
 
 
- 
+
 # register
 @app.route("/api/v1/books/registration", methods=["POST"])
 def new_register():
@@ -218,7 +224,7 @@ def new_register():
         response = {}
         if checkCredentials(username=login) == -1:
             response = {'success': False, 'message': 'User with same name already exists.', 'userId': None}
-            return json.dumps(response, ensure_ascii=False) 
+            return json.dumps(response, ensure_ascii=False)
         log = LoginData(login=login, user_id=user_id, password=password, email=email)
         us = User(name=name, user_id=user_id, info=info, book_challenge_id=user_id)
         bc = BookChallenge(challenge_id=user_id, book_read=0, book_want=0)
@@ -227,9 +233,9 @@ def new_register():
         session.add(bc)
         session.commit()
         response = {'success': True, 'message': 'Register and login successful!', 'userId': user_id}
-        return json.dumps(response, ensure_ascii=False) 
-        
-   
+        return json.dumps(response, ensure_ascii=False)
+
+
 
 @app.route("/api/v1/books/signIn", methods=["POST"])
 def signIn():
@@ -241,10 +247,10 @@ def signIn():
         response = {'success': True, 'message': 'Login successful!', 'userId': current_user_id}
     else:
         response = {'success': False, 'message': 'Invalid username or password.', 'userId': None}
-    return json.dumps(response, ensure_ascii=False) 
+    return json.dumps(response, ensure_ascii=False)
 
-   
-        
+
+
 # book challenge
 @app.route("/api/v1/books/book_challenge_read", methods=["POST"])
 def update_books_to_read():
@@ -265,14 +271,14 @@ def update_books_want():
         existing_status = session.query(BookChallenge).filter_by(challenge_id=challenge_id).first()
         if existing_status:
             existing_status.book_want = book_want
-        session.commit()    
+        session.commit()
 
 
 # get all user books
 @app.route("/api/v1/books/get_user_books", methods=["POST"])
-def api_search_by_id():
+def get_all_user_books():
     data = request.json
-    user_id = data["user_id"]
+    user_id = data
     book_list = []
     with Session() as session:
         query = session.query(BookStatus).filter(BookStatus.user_id == user_id).all()
@@ -280,6 +286,7 @@ def api_search_by_id():
             book_id = q.book_id
             book = session.query(Book).get(book_id)
             author = session.query(Author).get(book.author_id)
+            img = session.query(img_path).get(book.book_id)
             auth_name = ''
             if author is not None:
                 auth_name = author.name
@@ -287,15 +294,52 @@ def api_search_by_id():
             'book_id': book.book_id,
             'author' : auth_name,
             'name' : book.name,
-            'status' : q.status}
+            'status' : q.status,
+            'path' : img.path}
             book_list.append(book_dict)
-    return json.dumps(book_list, ensure_ascii=False) 
+    return json.dumps(book_list, ensure_ascii=False)
+
+@app.route("/api/v1/books/user", methods=["POST"])
+def get_user_info():
+    data = request.json
+    user_id = data
+    with Session() as session:
+        query = session.query(User).filter(User.user_id == user_id).first()
+        user_dict = {
+            'name' : query.name,
+            'info': query.info
+            }
+    return json.dumps(user_dict, ensure_ascii=False) 
+
+@app.route("/images")
+def showImg():
+     with Session() as session:
+        book = session.query(Book).get(1)
+        if book is not None:
+            auth_id = book.author_id
+            author = session.query(Author).get(auth_id)
+            img = session.query(img_path).get(book.book_id)
+            auth_name = ''
+            if author is not None:
+                auth_name = author.name
+            response = {
+            'book_id': book.book_id,
+            'author' : auth_name,
+            'name' : book.name,
+            'annotation' : book.annotation,
+            'rate': book.rate,
+            'path' : img.path}
+            return json.dumps(response, ensure_ascii=False)
 
 
+@app.route('/images/<filename>')
+def get_image(filename):
+    return send_from_directory('images', filename)
+
+
+#@app.route("/")
+#def showHomePage():
+#    return "This is home page"
 
 if __name__ == "__main__":
-    print(api_search_by_id())
-  #app.run(host="0.0.0.0", port=8080)
-  # with Session() as session:
-  #     result = session.query(Book).join(Author).all()
-  #     print(result[0].name)
+    app.run(host="0.0.0.0", port=8080)
